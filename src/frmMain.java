@@ -4,6 +4,7 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -31,6 +32,8 @@ public class frmMain extends javax.swing.JFrame {
      */
     public frmMain() {
         initComponents();
+        setJam();
+        setTanggal();
     }
     
     public void setTanggal(){
@@ -40,31 +43,7 @@ public class frmMain extends javax.swing.JFrame {
     labeltanggal.setText(kal.format(skrg));
     }
     
-    public void SetJam() {
-    ActionListener taskPerformer = new ActionListener(){
-        public void actionPerformed(ActionEvent evt) {
-            Date dt = new Date();
-            int nilai_jam = dt.getHours();
-            int nilai_menit = dt.getMinutes();
-            int nilai_detik = dt.getSeconds();
-            if (nilai_jam <= 9) {
-                nol_jam = "0";
-            }
-            if (nilai_menit <= 9) {
-                nol_menit = "0";
-            }
-            if (nilai_detik <= 9) {
-                nol_detik = "0";
-            }
-            
-            String jam = nol_jam + Integer.toString(nilai_jam);
-            String menit = nol_menit + Integer.toString(nilai_menit);
-            String detik = nol_detik + Integer.toString(nilai_detik);
-            labeljam.setText("Jam "+jam + ":" + menit + ":" +detik);
-        }
-    };
-    new Timer(100, taskPerformer).start();
-    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -124,13 +103,13 @@ public class frmMain extends javax.swing.JFrame {
         tblData.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         tblData.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "NIS", "NamaSiswa", "JenisKelamin", "Kelas", "Email", "Alamat"
+                "NIS", "NamaSiswa", "Tempat", "Tanggal", "JenisKelamin", "Kelas", "Email", "Alamat"
             }
         ));
         tblData.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -308,13 +287,13 @@ public class frmMain extends javax.swing.JFrame {
         labeltanggal.setForeground(new java.awt.Color(255, 255, 255));
         labeltanggal.setText("Tanggal");
         jPanel5.add(labeltanggal);
-        labeltanggal.setBounds(670, 70, 57, 20);
+        labeltanggal.setBounds(670, 70, 210, 20);
 
         labeljam.setFont(new java.awt.Font("Calisto MT", 1, 16)); // NOI18N
         labeljam.setForeground(new java.awt.Color(255, 255, 255));
         labeljam.setText("Jam");
         jPanel5.add(labeljam);
-        labeljam.setBounds(670, 100, 51, 20);
+        labeljam.setBounds(670, 100, 220, 20);
 
         btnPrint.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
         btnPrint.setText("PRINT");
@@ -336,15 +315,24 @@ public class frmMain extends javax.swing.JFrame {
         int baris = tblData.getSelectedRow();
         if (baris != -1) {
             txtNIS.setText(tblData.getValueAt(baris, 0).toString());
-            txtTempat.setText(tblData.getValueAt(baris, 1).toString());
-            if ("Laki-laki".equals(tblData.getValueAt(baris, 2).toString())) {
+            txtNama.setText(tblData.getValueAt(baris, 1).toString());
+            txtTempat.setText(tblData.getValueAt(baris, 2).toString());
+            SimpleDateFormat date=new SimpleDateFormat("yyyy-MM-dd");
+            Date dateFormat=null;
+            try {
+                dateFormat=date.parse(tblData.getValueAt(baris, 3).toString());
+            } catch (ParseException ex) {
+                
+            }
+            tgl.setDate(dateFormat);
+            if ("Laki-laki".equals(tblData.getValueAt(baris, 4).toString())) {
                 rdLaki.setSelected(true);
             } else {
                 rdPerempuan.setSelected(true);
             }
-            txtKelas.setText(tblData.getValueAt(baris, 3).toString());
-            txtEmail.setText(tblData.getValueAt(baris, 4).toString());
-            txtAlamat.setText(tblData.getValueAt(baris, 5).toString());
+            txtKelas.setText(tblData.getValueAt(baris, 5).toString());
+            txtEmail.setText(tblData.getValueAt(baris, 6).toString());
+            txtAlamat.setText(tblData.getValueAt(baris, 7).toString());
         }
     }//GEN-LAST:event_tblDataMouseClicked
 
@@ -356,19 +344,33 @@ public class frmMain extends javax.swing.JFrame {
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String tanggal = dateFormat.format(tgl.getDate());
-        String JK = "";
-        if (rdLaki.isSelected()) {
+       
+        
+        if ("".equals(txtNIS.getText()) || 
+                "".equals(txtNama.getText()) ||
+                "".equals(txtTempat.getText()) || 
+                "".equals(tanggal) ||               
+                "".equals(txtKelas.getText()) || 
+                "".equals(txtEmail.getText()) ||
+                "".equals(txtAlamat.getText())) {
+            JOptionPane.showMessageDialog(this, "Harap Lengkapi Data", "Error", 
+            JOptionPane.WARNING_MESSAGE);
+        } else {
+             String JK = "";
+            if (rdLaki.isSelected()) {
                 JK = "L";
             } else {
                 JK = "P";
             }
-        if ("".equals(txtNIS.getText()) || "".equals(txtNama.getText()) ||"".equals(txtTempat.getText()) || tanggal.equals("") || JK.equals("") || "".equals(txtKelas.getText()) || "".equals(txtEmail.getText()) ||"".equals(txtAlamat.getText())) {
-            JOptionPane.showMessageDialog(this, "Harap Lengkapi Data", "Error", 
-            JOptionPane.WARNING_MESSAGE);
-        } else {    
-            String SQL = "INSERT INTO t_siswa (NIS,NamaSiswa,Tanggallahir,TempatLahir,JenisKelamin,Kelas,Email,Alamat) "
-            + "VALUES('" + txtNIS.getText() +"','" + txtNama.getText() + "','" + txtTempat.getText() + "','" + tanggal + "','" + JK + "','"
-            + txtKelas.getText() + "','" +txtEmail.getText() + "','" + txtAlamat.getText()+"')";
+            String SQL = "INSERT INTO t_siswa (NIS,NamaSiswa,TempatLahir,Tanggallahir,JenisKelamin,Kelas,Email,Alamat) "
+            + "VALUES('" + txtNIS.getText() 
+                    +"','" + txtNama.getText() 
+                    +"','" + txtTempat.getText() 
+                    +"','" + tanggal 
+                    +"','" + JK 
+                    +"','" + txtKelas.getText() 
+                    + "','" +txtEmail.getText() 
+                    + "','" + txtAlamat.getText()+"')";
             int status = KoneksiDB.execute(SQL);
             if (status == 1) {
                 JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan","Sukses",
@@ -400,8 +402,11 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_btnDeleteActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
-        txtTempat.setText("");
+        
         txtNIS.setText("");
+        txtNama.setText("");
+        txtTempat.setText("");
+        tgl.setCalendar(null);
         txtKelas.setText("");
         buttonGroup1.clearSelection();
         txtEmail.setText("");
@@ -413,12 +418,15 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_btnRefreshActionPerformed
 
     private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
-int  baris = tblData.getSelectedRow();
- String NIS = tblData.getValueAt(baris, 0).toString();
+    
         if ("".equals(txtNIS.getText()) || "".equals(txtNama.getText()) ||"".equals(txtAlamat.getText()) || "".equals(txtKelas.getText()) || "".equals(txtTempat.getText()) || "".equals(txtEmail.getText())) {
             JOptionPane.showMessageDialog(this, "Harap Lengkapi Data", "Error", JOptionPane.WARNING_MESSAGE);
         } else {
-            String JK = "";
+            int  baris = tblData.getSelectedRow();
+        String NIS = tblData.getValueAt(baris, 0).toString();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String tanggal = dateFormat.format(tgl.getDate());
+        String JK = "";
             if (rdLaki.isSelected()) {
                 JK = "L";
             } else {
@@ -426,8 +434,8 @@ int  baris = tblData.getSelectedRow();
             }
             String SQL = "UPDATE t_siswa SET `NIS`='"+txtNIS.getText()
                     +"',`NamaSiswa`='"+txtNama.getText()
-                    +"',`TempatLahiir`='"+txtTempat.getText()
-                    +"',`TanggalLahir`='"+tgl                   
+                    +"',`TempatLahir`='"+txtTempat.getText()
+                    +"',`TanggalLahir`='"+tanggal                   
                     +"',`JenisKelamin`='"+JK
                     +"',`Kelas`='"+txtKelas.getText()
                     +"',`Email`='"+txtEmail.getText()
@@ -539,8 +547,8 @@ int  baris = tblData.getSelectedRow();
             while(rs.next()){
                 String NIS = rs.getString(1);
                 String namaSiswa = rs.getString(2);
-                String tempatLahir = rs.getString(3);
-                String tanggalLahir = rs.getString(4);
+                String Tempat = rs.getString(3);
+                String Tanggal = rs.getString(4);
                 String jenisKelamin = "";
                 if ("L".equals(rs.getString(5))) {
                     jenisKelamin = "Laki-laki";
@@ -550,12 +558,38 @@ int  baris = tblData.getSelectedRow();
                 String kelas = rs.getString(6);
                 String email = rs.getString(7);
                 String alamat = rs.getString(8);
-                String data[] = {NIS,namaSiswa,jenisKelamin,kelas,email,alamat};
+                String data[] = {NIS,namaSiswa,Tempat,Tanggal,jenisKelamin,kelas,email,alamat};
                 dtm.addRow(data);
             }
         } catch (SQLException ex) {
             java.util.logging.Logger.getLogger(frmMain.class.getName()).log(Level.SEVERE, null, ex);
         }
         tblData.setModel(dtm);
+    }
+
+    private void setJam() {
+        ActionListener taskPerformer = new ActionListener(){
+        public void actionPerformed(ActionEvent evt) {
+            Date dt = new Date();
+            int nilai_jam = dt.getHours();
+            int nilai_menit = dt.getMinutes();
+            int nilai_detik = dt.getSeconds();
+            if (nilai_jam <= 9) {
+                nol_jam = "0";
+            }
+            if (nilai_menit <= 9) {
+                nol_menit = "0";
+            }
+            if (nilai_detik <= 9) {
+                nol_detik = "0";
+            }
+            
+            String jam = nol_jam + Integer.toString(nilai_jam);
+            String menit = nol_menit + Integer.toString(nilai_menit);
+            String detik = nol_detik + Integer.toString(nilai_detik);
+            labeljam.setText("Jam "+jam + ":" + menit + ":" +detik);
+        }
+    };
+    new Timer(100, taskPerformer).start();
     }
 }
